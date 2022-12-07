@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+    <title>code scanner</title>
+    <style>
+        .wrap {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .title {
+            width: 100%;
+
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .main_btn {
+            border: white;
+            background-color: white;
+        }
+
+        .row {
+            width: 1500px;
+
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .plus {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+            margin: 10px;
+
+            width: 200px;
+            height: 200px;
+
+            font-size: 50px;
+        }
+
+        .problem {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 10px;
+
+            width: 200px;
+            height: 200px;
+
+            background-color: white;
+        }
+
+        .problem_title {
+            width: 200px;
+            height: 200px;
+
+            background-color: white;
+        }
+
+        .makeprob {
+            border: 1px solid;
+            width: 550px;
+            height: 300px;
+
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .makeprob_title {
+            border: 1px solid;
+            margin: 20px;
+            width: 500px;
+        }
+
+        .makeprob_exp {
+            border: 1px solid;
+            margin: 20px;
+            width: 500px;
+        }
+
+        .buttons {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn1 {
+            width: 200px;
+            height: 200px;
+
+            background-color: white;
+        }
+
+    </style>
+    <script>
+
+        // GET
+        function get_problems() {
+            // $('#problem-cards').empty()
+            $.ajax({
+                type: "GET",
+                url: "/problem",
+                data: {},
+                success: function (response) {
+                    let doc = JSON.parse(response)
+                    console.log(doc)
+                    for (let i = 0; i < doc.length; i++) {
+                        // let id = doc[i][0]
+                        let title = doc[i][1]
+                        // let comment = doc[i][2]
+                        let temp_html = `<div class="problem">
+                                                <button class="problem_title">${title}</button>
+                                    </div>`
+                        $('#problem-cards').append(temp_html)
+                    }
+                }
+            })
+        }
+
+        $(document).ready(function () {
+            get_problems()
+        });
+
+
+        // POST
+        function save_problems() {
+            let title = $('#exampleModalLabel').val()
+            let comment = $('#comment').val()
+            $.ajax({
+                type: 'POST',
+                url: '/problem',
+                data: {title_give: title, comment_give: comment},
+                success: function (response) {
+                    console.log(response)
+                    window.location.reload()
+                }
+            })
+        }
+
+
+        // 검색
+        function filter() {
+            let search = document.getElementById("search").value.toLowerCase()
+            let problem = document.getElementsByClassName("problem")
+            for (let i = 0; i < problem.length; i++) {
+                problem_title = problem[i].getElementsByClassName("problem_title")
+                if (problem_title[0].innerHTML.toLowerCase().includes(search)
+                ) {
+                    problem[i].style.display = "flex"
+                } else {
+                    problem[i].style.display = "none"
+                }
+            }
+        }
+
+        function reload() {
+            window.location.reload()
+        }
+    </script>
+</head>
+<body>
+<div class="wrap">
+    <div class="title">
+        <h1>
+            <button onclick="reload()" class="main_btn">code scanner</button>
+        </h1>
+        <nav class="navbar navbar-expand-lg navbar-light bg-white">
+            <div class="container-fluid">
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="#">로그인</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="#">회원가입</a>
+                        </li>
+                    </ul>
+                    <form class="d-flex">
+                        <input onkeyup="filter()" id="search" class="form-control me-2" type="search"
+                               placeholder="Search" aria-label="Search">
+                    </form>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <!--    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">-->
+    <!--        Launch demo modal-->
+    <!--    </button>-->
+    <div style="justify-content: center" class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" style="width: 800px">
+                <div class="modal-header">
+                    <input type="text" class="form-control" class="modal-title" id="exampleModalLabel"
+                           placeholder="문제 제목">
+                </div>
+                <div class="modal-body">
+                    <textarea class="form-control" placeholder="문제 설명" id="comment" style="height: 200px"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                    <button onclick="save_problems()" type="button" class="btn btn-primary">추가</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" id="problem-cards">
+        <div class="plus">
+            <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn1 btn-outline-dark">
+                +
+            </button>
+        </div>
+    </div>
+    <!--    <div class="makeprob" id="makeprob">-->
+    <!--        <div class="makeprob_title">-->
+    <!--            <input type="text" class="form-control" id="title" placeholder="문제 제목">-->
+    <!--            <label for="title"></label>-->
+    <!--        </div>-->
+    <!--        <div class="makeprob_exp">-->
+    <!--            <textarea class="form-control" placeholder="문제 설명" id="comment"></textarea>-->
+    <!--            <label for="comment"></label>-->
+    <!--        </div>-->
+    <!--        <div class="buttons">-->
+    <!--            <button onclick="save_problems()">제출</button>-->
+    <!--            <button onclick="close_box()">닫기</button>-->
+    <!--        </div>-->
+    <!--    </div>-->
+</div>
+</body>
+</html>
